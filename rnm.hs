@@ -55,5 +55,6 @@ main = do
                 else do
                     printf " <- Renamed\n"
                     renameFile x fn
-    printf "FINISH\n"
+                    
+    printf "\n    FINISH\n"
     getChar
