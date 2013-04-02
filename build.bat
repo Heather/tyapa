@@ -1,3 +1,6 @@
 @echo off
 
-ghc rnm.hs
+::ghc rnm.hs
+
+cabal configure
+cabal build

@@ -1,0 +1,15 @@
+name: rnm
+version: 0.0.1
+license: BSD3
+
+build-type: Simple
+cabal-version: >= 1.6
+
+Executable    rnm
+  Main-Is:    rnm.hs
+  Hs-Source-Dirs: .
+  Build-Depends:
+      base
+    , text
+    , filepath
+    , directory
