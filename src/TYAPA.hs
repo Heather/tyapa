@@ -2,6 +2,7 @@ import Data.List
 import Data.Function
 import Data.Char
 import Data.List
+import Data.IORef
 
 import System.IO
 import System.Directory
@@ -41,6 +42,11 @@ main = do
     let sorted  = nSort all
     let ziped   = zip[1..] . filter ((isPrefixOf `on` reverse. map toLower) ".jpg") $ sorted
     
+    skipped <- newIORef 0
+    renamed <- newIORef 0
+    
+    printf "\n"
+    
     forM_ ziped $ \(i,x) -> do
     
         let z = if odd i then 1 else 2
@@ -50,11 +56,19 @@ main = do
         printf "  %s --> %s" x fn
         doesFileExist fn >>= \b -> do 
             if b 
-                then
+                then do
                     printf "  <- File exist\n"
+                    counter <- readIORef skipped
+                    writeIORef skipped $ counter + 1
                 else do
                     printf " <- Renamed\n"
+                    counter <- readIORef renamed
+                    writeIORef renamed $ counter + 1
                     renameFile x fn
                     
-    printf "\n    FINISH\n"
+    printf "\n"
+    skpd <- readIORef skipped
+    cntr <- readIORef renamed
+    printf "    skipped %d files\n" (skpd::Int)
+    printf "    renamed %d files\n" (cntr::Int)
     getChar

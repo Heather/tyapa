@@ -1,13 +1,13 @@
-name: rnm
-version: 0.0.1
+name: TYAPA
+version: 0.0.2
 license: BSD3
 
 build-type: Simple
 cabal-version: >= 1.6
 
-Executable    rnm
-  Main-Is:    rnm.hs
-  Hs-Source-Dirs: .
+Executable    TYAPA
+  Main-Is:    TYAPA.hs
+  Hs-Source-Dirs: src
   Build-Depends:
       base
     , text
