@@ -30,3 +30,7 @@ main = do
                     printf " <- Renamed\n"
                     renameFile x fn
 ```
+
+thanks to 
+ - https://github.com/ameingast/NaturalSort/blob/master/NaturalSort.hs for Natural Sort
+ - #gentoo-haskell for teaching me some basics
