@@ -1,3 +1,5 @@
+﻿{-# LANGUAGE UnicodeSyntax #-}
+
 import Data.List
 import Data.Function
 import Data.Char
@@ -9,17 +11,18 @@ import System.Directory
 import System.FilePath.Windows
 
 import Control.Monad
+
 import Text.Printf
 
-nSort   ::  [String] -> [String]
+nSort   ::  [String] → [String]
 nSort s =   if (and . map allFloat) s then    
-                let { readFloat = read :: String -> Float } 
+                let { readFloat = read :: String → Float } 
                 in  (map show . sortBy compare . map readFloat) s
             else    
                 sortBy natComp s
-    where allFloat  =   all (\x -> isDigit x || '.' == 'x')
+    where allFloat  =   all (\x → isDigit x || '.' == 'x')
 
-natComp                                 ::  String -> String -> Ordering
+natComp                                 ::  String → String → Ordering
 natComp [] []                           =   EQ
 natComp [] _                            =   LT
 natComp _ []                            =   GT
@@ -36,39 +39,40 @@ natComp xxs@(x:xs) yys@(y:ys)
 
 main = do
 
-    all <- getDirectoryContents "."
-    cd  <- takeBaseName `fmap` getCurrentDirectory
+    all ← getDirectoryContents "."
+    cd  ← takeBaseName `fmap` getCurrentDirectory
+
+    let ziped = zip[1..] 
+                . nSort
+                . filter ((isPrefixOf `on` reverse. map toLower) ".jpg") 
+                    $ all
     
-    let sorted  = nSort all
-    let ziped   = zip[1..] . filter ((isPrefixOf `on` reverse. map toLower) ".jpg") $ sorted
-    
-    skipped <- newIORef 0
-    renamed <- newIORef 0
+    skipped ← newIORef 0
+    renamed ← newIORef 0
     
     printf "\n"
+    forM_ ziped $ \(i,x) → do
     
-    forM_ ziped $ \(i,x) -> do
-    
-        let z = if odd i then 1 else 2
-        let q = ceiling (fromIntegral i / 2.0 )
-        let fn = (printf "%s.%d.%d.JPG" cd (q::Int) (z::Int))
+        let z   = if odd i then 1 else 2
+        let q   = ceiling (fromIntegral i / 2.0 )
+        let fn  = printf "%s.%d.%d.JPG" cd (q::Int) (z::Int)
         
         printf "  %s --> %s" x fn
-        doesFileExist fn >>= \b -> do 
-            if b 
-                then do
+        doesFileExist fn >>= \fx → 
+            case fx of
+                True -> do
                     printf "  <- File exist\n"
-                    counter <- readIORef skipped
+                    counter ← readIORef skipped
                     writeIORef skipped $ counter + 1
-                else do
+                False -> do
                     printf " <- Renamed\n"
-                    counter <- readIORef renamed
+                    counter ← readIORef renamed
                     writeIORef renamed $ counter + 1
                     renameFile x fn
                     
     printf "\n"
-    skpd <- readIORef skipped
-    cntr <- readIORef renamed
+    skpd ← readIORef skipped
+    cntr ← readIORef renamed
     printf "    skipped %d files\n" (skpd::Int)
     printf "    renamed %d files\n" (cntr::Int)
     getChar

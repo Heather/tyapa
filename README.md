@@ -12,23 +12,16 @@ natComp xxs@(x:xs) yys@(y:ys)
             noDigit     =   not . isDigit
             getNumber s =   let { digits = takeWhile isDigit s }
                             in (read digits :: Integer, drop (length digits) s)
---source: https://github.com/ameingast/NaturalSort/blob/master/NaturalSort.hs
+
 main = do
-    all <- getDirectoryContents "."
-    cd  <- takeBaseName `fmap` getCurrentDirectory
-    let sorted    = zip[1..] . nSort . filter ((isPrefixOf `on` reverse) ".jpg") $ all
-    forM_ sorted $ \(i,x) -> do
-        let z = if odd i then 1 else 2
-        let q = ceiling (fromIntegral i / 2.0 )
-        let fn = (printf "%s.%d.%d.jpg" cd (q::Int) (z::Int))
-        printf "  %s --> %s" x fn
-        doesFileExist fn >>= \b -> do 
-            if b 
-                then
-                    printf "  <- File exist\n"
-                else do
-                    printf " <- Renamed\n"
-                    renameFile x fn
+
+    all < getDirectoryContents "."
+    cd  < takeBaseName `fmap` getCurrentDirectory
+
+    let ziped = zip[1..] 
+                . nSort
+                . filter ((isPrefixOf `on` reverse. map toLower) ".jpg") 
+                    $ all
 ```
 
 thanks to 
