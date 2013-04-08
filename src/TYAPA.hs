@@ -61,12 +61,12 @@ main    = do
     printf "\n  Tyapa v.%s\n\n" version
     forM_ ziped $ \(i,x) → do
     
-        let z   = if odd i then 1 else 2
-        let q   = ceiling (fromIntegral i / 2.0 )
         let fn  = 
-                    printf "%s.%d.%d%s" cd (q::Int) (z::Int) sff
-                    where sff = map toUpper $ takeExtension x
-        
+                printf "%s.%d.%d%s" cd (q::Int) (z::Int) sff
+                where sff = map toUpper $ takeExtension x
+                      q   = ceiling (fromIntegral i / 2.0 )
+                      z   = if odd i then 1 else 2
+                      
         printf "  %s --> %s" x fn
         doesFileExist fn >>= \fx → 
             case fx of
