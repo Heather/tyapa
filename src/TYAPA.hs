@@ -51,10 +51,10 @@ main    = do
 
     let ziped = zip[1..]
                 . nSort
-                . filter (\x -> any(`isSuffixOf` map toLower x)
+                . filter (\x → any(`isSuffixOf` map toLower x)
                     [".jpg", ".jpeg", ".png", ".gif", ".bmp"])
                         $ all
-                    
+
     skipped ← newIORef 0
     renamed ← newIORef 0
     
