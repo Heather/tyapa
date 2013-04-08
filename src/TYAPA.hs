@@ -17,6 +17,9 @@ import System.FilePath.Posix
 import Control.Monad
 import Control.Applicative
 
+import Data.Maybe
+import Text.Regex
+
 import Text.Printf
 ------------------------- Narural Sort algorithm ---------------------------------------
 nSort   ::  [String] → [String]
@@ -47,7 +50,7 @@ main    = do
     -- >
     all ← getDirectoryContents "."
     cd  ← takeBaseName <$> getCurrentDirectory
-    -- >
+    let rx = printf "(\\%s)(\\.)(\\d+)(\\.)([1-2])(\\.)(\\w+)" cd
     let ziped = zip[1..] . nSort
               . filter (\x → any(`isSuffixOf` map toLower x)
                     [".jpg", ".jpeg", ".png", ".gif", ".bmp"])
@@ -58,7 +61,7 @@ main    = do
     -- >
     printf "\n  Tyapa v.%s\n\n" version
     forM_ ziped $ \(i,x) → do
-        -- >
+        -- >             Naming logics
         let fn  = 
                 printf "%s.%d.%d%s" cd (q::Int) (z::Int) sff
                 where sff = map toUpper $ takeExtension x
@@ -66,7 +69,10 @@ main    = do
                       z   = if odd i then 1 else 2
         -- >
         printf "  %s --> %s" x fn
-        doesFileExist fn >>= \fx → 
+        doesFileExist fn >>= \fx → do
+            let nef = isNothing . matchRegex (mkRegex rx) $ x
+            putStr $ if nef then "  < New >"
+                            else "  < Already Renamed >"
             case fx of
                 True -> do
                     printf "  <- File exist\n"  -- skipped + 1
@@ -75,7 +81,8 @@ main    = do
                     printf " <- Renamed\n"      -- renamed + 1
                     counter ← readIORef renamed; writeIORef renamed $ counter + 1
                     renameFile x fn
-    -- >
+                    
+    -- >                    Statistics
     printf "\n"
     skpd ← readIORef skipped; printf "    skipped %d files\n" (skpd::Int)
     cntr ← readIORef renamed; printf "    renamed %d files\n" (cntr::Int)
