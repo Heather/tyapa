@@ -1,4 +1,4 @@
-﻿{-# LANGUAGE UnicodeSyntax #-}
+﻿{-# LANGUAGE UnicodeSyntax, CPP #-}
 
 import Data.List
 import Data.Function
@@ -8,7 +8,12 @@ import Data.IORef
 
 import System.IO
 import System.Directory
+
+#if defined(mingw32_HOST_OS) || defined(__MINGW32__) 
 import System.FilePath.Windows
+#else
+import System.FilePath.Posix
+#endif
 
 import Control.Monad
 import Control.Applicative
@@ -38,7 +43,7 @@ natComp xxs@(x:xs) yys@(y:ys)
             getNumber s =   let { digits = takeWhile isDigit s }
                             in (read digits :: Integer, drop (length digits) s)
                    
-version = "0.1.1"
+version = "0.1.2"
 main    = do
 
     all ← getDirectoryContents "."
