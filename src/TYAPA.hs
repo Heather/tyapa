@@ -11,6 +11,7 @@ import System.Directory
 import System.FilePath.Windows
 
 import Control.Monad
+import Control.Applicative
 
 import Text.Printf
 
@@ -36,18 +37,19 @@ natComp xxs@(x:xs) yys@(y:ys)
             noDigit     =   not . isDigit
             getNumber s =   let { digits = takeWhile isDigit s }
                             in (read digits :: Integer, drop (length digits) s)
-
-version = "0.1.0"
+                   
+version = "0.1.1"
 main    = do
 
     all ← getDirectoryContents "."
-    cd  ← takeBaseName `fmap` getCurrentDirectory
+    cd  ← takeBaseName <$> getCurrentDirectory
 
-    let ziped = zip[1..] 
+    let ziped = zip[1..]
                 . nSort
-                . filter ((isPrefixOf `on` reverse. map toLower) ".jpg") 
-                    $ all
-    
+                . filter (\x -> any(`isSuffixOf` map toLower x)
+                    [".jpg", ".jpeg", ".png", ".gif", ".bmp"])
+                        $ all
+                    
     skipped ← newIORef 0
     renamed ← newIORef 0
     
@@ -56,7 +58,9 @@ main    = do
     
         let z   = if odd i then 1 else 2
         let q   = ceiling (fromIntegral i / 2.0 )
-        let fn  = printf "%s.%d.%d.JPG" cd (q::Int) (z::Int)
+        let fn  = 
+                    printf "%s.%d.%d%s" cd (q::Int) (z::Int) sff
+                    where sff = map toUpper $ takeExtension x
         
         printf "  %s --> %s" x fn
         doesFileExist fn >>= \fx → 
