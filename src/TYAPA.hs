@@ -45,7 +45,7 @@ natComp xxs@(x:xs) yys@(y:ys)
             getNumber s =   let { digits = takeWhile isDigit s }
                             in (read digits :: Integer, drop (length digits) s)
 ------------------------------------------------------------------------------------------
-version = "0.1.4"
+version = "0.1.5"
 main    = do
     -- >
     all ← getDirectoryContents "."
@@ -62,26 +62,40 @@ main    = do
     -- >
     printf "\n  Tyapa v.%s\n\n" version
     forM_ ziped $ \(i,x) → do
-        -- >             Naming logics
-        let fn  = 
-                printf "%s.%d.%d%s" cd (q::Int) (z::Int) s
-                where s = map toUpper $ takeExtension x
-                      q = ceiling $ fromIntegral i / 2.0
-                      z = if odd i then 1 else 2
-        -- >
-        printf "  %s --> %s" x fn
-        doesFileExist fn >>= \fx → do
-            let nef = isNothing . matchRegex (mkRegex rx) $ x
-            putStr $ if nef then "  < New >"
-                            else "  < Already Renamed >"
-            case fx of
-                True -> do
-                    printf "  <- File exist\n"  -- skipped + 1
-                    counter ← readIORef skipped; writeIORef skipped $ counter + 1
-                False -> do
-                    printf " <- Renamed\n"      -- renamed + 1
-                    counter ← readIORef renamed; writeIORef renamed $ counter + 1
-                    renameFile x fn
+        printf "  %s" x
+        if isNothing . matchRegex (mkRegex rx) $ x 
+            then let fn= printf "%s.%d.%d%s" cd (q::Int) (z::Int) s
+                         where s = map toUpper $ takeExtension x
+                               z = if odd i then 1 else 2
+                               q = ceiling $ fromIntegral i / 2.00
+                     frename fname fnewname = do
+                         printf " <- Renamed\n"      -- renamed + 1
+                         counter ← readIORef renamed; writeIORef renamed $ counter + 1
+                         renameFile fname fnewname
+                 in doesFileExist fn >>= \fx →
+                        case fx of
+                            True -> 
+                                let tyap fi = do
+                                    if fi < i
+                                        then
+                                            let fnx = printf "%s.%d.%d%s" cd (q::Int) (z::Int) s
+                                                  where s = map toUpper $ takeExtension x
+                                                        z = if odd i then 1 else 2
+                                                        q = ( ceiling $ fromIntegral i / 2.00 ) - fi
+                                            in doesFileExist fnx >>= \fxx → 
+                                                case fxx of
+                                                    True -> tyap $ (fi + 1)
+                                                    False -> do
+                                                        printf " --> %s" fnx
+                                                        frename x fnx
+                                        else do
+                                            printf "  <- File exist\n"  -- skipped + 1
+                                            counter ← readIORef skipped; writeIORef skipped $ counter + 1
+                                in tyap 1
+                            False -> do
+                                printf " --> %s" fn
+                                frename x fn
+            else putStrLn "  <- File Already Renamed"
                     
     -- >                    Statistics
     printf "\n"
