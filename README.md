@@ -13,15 +13,34 @@ natComp xxs@(x:xs) yys@(y:ys)
             getNumber s =   let { digits = takeWhile isDigit s }
                             in (read digits :: Integer, drop (length digits) s)
 
-main = do
-
+natComp xxs@(x:xs) yys@(y:ys)
+    | noDigit x && noDigit y && x == y  =   natComp xs ys
+    | noDigit x || noDigit y            =   compare x y
+    | nx == ny                          =   natComp rx ry
+    | otherwise                         =   compare nx ny
+    where   (nx,rx)     =   getNumber xxs
+            (ny,ry)     =   getNumber yys
+            noDigit     =   not . isDigit
+            getNumber s =   let { digits = takeWhile isDigit s }
+                            in (read digits :: Integer, drop (length digits) s)
+                   
     all < getDirectoryContents "."
-    cd  < takeBaseName `fmap` getCurrentDirectory
+    cd  < takeBaseName <$> getCurrentDirectory
 
-    let ziped = zip[1..] 
+    let ziped = zip[1..]
                 . nSort
-                . filter ((isPrefixOf `on` reverse. map toLower) ".jpg") 
-                    $ all
+                . filter (\x -> any(`isSuffixOf` map toLower x)
+                    [".jpg", ".jpeg", ".png", ".gif", ".bmp"])
+                        $ all
+                    
+    printf "\n  Tyapa v.%s\n\n" version
+    forM_ ziped $ \(i,x) > do
+    
+        let fn  = 
+                printf "%s.%d.%d%s" cd (q::Int) (z::Int) sff
+                where sff = map toUpper $ takeExtension x
+                      q   = ceiling (fromIntegral i / 2.0 )
+                      z   = if odd i then 1 else 2
 ```
 
 thanks to 

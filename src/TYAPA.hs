@@ -43,7 +43,7 @@ natComp xxs@(x:xs) yys@(y:ys)
             getNumber s =   let { digits = takeWhile isDigit s }
                             in (read digits :: Integer, drop (length digits) s)
                    
-version = "0.1.2"
+version = "0.1.3"
 main    = do
 
     all ← getDirectoryContents "."
