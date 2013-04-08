@@ -37,7 +37,8 @@ natComp xxs@(x:xs) yys@(y:ys)
             getNumber s =   let { digits = takeWhile isDigit s }
                             in (read digits :: Integer, drop (length digits) s)
 
-main = do
+version = "0.1.0"
+main    = do
 
     all ← getDirectoryContents "."
     cd  ← takeBaseName `fmap` getCurrentDirectory
@@ -50,7 +51,7 @@ main = do
     skipped ← newIORef 0
     renamed ← newIORef 0
     
-    printf "\n"
+    printf "\n  Tyapa v.%s\n\n" version
     forM_ ziped $ \(i,x) → do
     
         let z   = if odd i then 1 else 2
