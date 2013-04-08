@@ -45,12 +45,13 @@ natComp xxs@(x:xs) yys@(y:ys)
             getNumber s =   let { digits = takeWhile isDigit s }
                             in (read digits :: Integer, drop (length digits) s)
 ------------------------------------------------------------------------------------------
-version = "0.1.3"
+version = "0.1.4"
 main    = do
     -- >
     all ← getDirectoryContents "."
     cd  ← takeBaseName <$> getCurrentDirectory
-    let rx = printf "(\\%s)(\\.)(\\d+)(\\.)([1-2])(\\.)(\\w+)" cd
+    let rx = printf "(\\%s)(\\.)([0-9]*)(\\.)([1-2])(\\.)." cd
+    -- >
     let ziped = zip[1..] . nSort
               . filter (\x → any(`isSuffixOf` map toLower x)
                     [".jpg", ".jpeg", ".png", ".gif", ".bmp"])
@@ -63,10 +64,10 @@ main    = do
     forM_ ziped $ \(i,x) → do
         -- >             Naming logics
         let fn  = 
-                printf "%s.%d.%d%s" cd (q::Int) (z::Int) sff
-                where sff = map toUpper $ takeExtension x
-                      q   = ceiling $ fromIntegral i / 2.0
-                      z   = if odd i then 1 else 2
+                printf "%s.%d.%d%s" cd (q::Int) (z::Int) s
+                where s = map toUpper $ takeExtension x
+                      q = ceiling $ fromIntegral i / 2.0
+                      z = if odd i then 1 else 2
         -- >
         printf "  %s --> %s" x fn
         doesFileExist fn >>= \fx → do
