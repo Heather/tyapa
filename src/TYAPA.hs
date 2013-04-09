@@ -2,7 +2,6 @@
 import Data.List
 import Data.Function
 import Data.Char
-import Data.List
 import Data.IORef
 
 import System.IO
@@ -23,7 +22,7 @@ import Text.Regex
 import Text.Printf
 {------------------------- Narural Sort algorithm --------------------------------------}
 nSort   ::  [String] → [String]
-nSort s =   if (and . map allFloat) s then    
+nSort s =   if all allFloat s then    
                 let { readFloat = read :: String → Float } 
                 in  (map show . sortBy compare . map readFloat) s
             else    
@@ -45,7 +44,7 @@ natComp xxs@(x:xs) yys@(y:ys)
             getNumber s =   let { digits = takeWhile isDigit s }
                             in (read digits :: Integer, drop (length digits) s)
 {----------------------------------------------------------------------------------------}
-version = "0.1.6"
+version = "0.1.7"
 main    = do
     -- >
     all ← getDirectoryContents "."
@@ -70,22 +69,22 @@ main    = do
                          counter ← readIORef renamed; writeIORef renamed $ counter + 1
                          renameFile fname fnewname
                  in doesFileExist fn >>= \fileExist →
-                        case fileExist of 
-                            True →  let tyap fi = do {- We are looking for free slot for the file -}
+                        if fileExist 
+                            then let tyap fi =      {- We are looking for free slot for the file -}
                                         if fi < i  {- Because it's the only reason for file to exist -}
                                             then let fnx = printf "%s.%d.%d%s" cd (q::Int) (z::Int) s
                                                          where s = map toUpper $ takeExtension x
                                                                z = if odd i then 1 else 2
-                                                               q = ( ceiling $ fromIntegral i / 2.00 ) - fi
-                                                 in doesFileExist fnx >>= \fxx → 
-                                                    case fxx of
-                                                        True  → tyap $ (fi + 1)
-                                                        False → printf " --> %s" fnx >> frename x fnx
+                                                               q = ceiling (fromIntegral i / 2.00 ) - fi
+                                                 in doesFileExist fnx >>= \fileExistx → 
+                                                    if fileExistx
+                                                        then tyap (fi + 1)
+                                                        else printf " --> %s" fnx >> frename x fnx
                                             else do
                                                 printf "  <- File exist\n"
                                                 counter ← readIORef skipped; writeIORef skipped $ counter + 1
-                                    in tyap 1 {- Recursive i-1 -> 0 -}
-                            False → printf " --> %s" fn >> frename x fn
+                                 in tyap 1 {- Recursive i-1 -> 0 -}
+                            else printf " --> %s" fn >> frename x fn
             else putStrLn "  <- File Already Renamed"
 
     -- >                    Statistics
