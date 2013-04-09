@@ -21,7 +21,7 @@ import Data.Maybe
 import Text.Regex
 
 import Text.Printf
-------------------------- Narural Sort algorithm ---------------------------------------
+{------------------------- Narural Sort algorithm --------------------------------------}
 nSort   ::  [String] → [String]
 nSort s =   if (and . map allFloat) s then    
                 let { readFloat = read :: String → Float } 
@@ -44,8 +44,8 @@ natComp xxs@(x:xs) yys@(y:ys)
             noDigit     =   not . isDigit
             getNumber s =   let { digits = takeWhile isDigit s }
                             in (read digits :: Integer, drop (length digits) s)
-------------------------------------------------------------------------------------------
-version = "0.1.5"
+{----------------------------------------------------------------------------------------}
+version = "0.1.6"
 main    = do
     -- >
     all ← getDirectoryContents "."
@@ -56,11 +56,8 @@ main    = do
               . filter (\x → any(`isSuffixOf` map toLower x)
                     [".jpg", ".jpeg", ".png", ".gif", ".bmp"])
                         $ all
-    -- >
-    skipped ← newIORef 0
-    renamed ← newIORef 0
-    -- >
-    printf "\n  Tyapa v.%s\n\n" version
+    skipped ← newIORef 0; renamed ← newIORef 0 {- IO REF: -}
+    printf "\n  Tyapa v.%s\n\n" version        {-  Intro  -}
     forM_ ziped $ \(i,x) → do
         printf "  %s" x
         if isNothing . matchRegex (mkRegex rx) $ x 
@@ -69,34 +66,28 @@ main    = do
                                z = if odd i then 1 else 2
                                q = ceiling $ fromIntegral i / 2.00
                      frename fname fnewname = do
-                         printf " <- Renamed\n"      -- renamed + 1
+                         printf " <- Renamed\n"
                          counter ← readIORef renamed; writeIORef renamed $ counter + 1
                          renameFile fname fnewname
-                 in doesFileExist fn >>= \fx →
-                        case fx of
-                            True -> 
-                                let tyap fi = do
-                                    if fi < i
-                                        then
-                                            let fnx = printf "%s.%d.%d%s" cd (q::Int) (z::Int) s
-                                                  where s = map toUpper $ takeExtension x
-                                                        z = if odd i then 1 else 2
-                                                        q = ( ceiling $ fromIntegral i / 2.00 ) - fi
-                                            in doesFileExist fnx >>= \fxx → 
-                                                case fxx of
-                                                    True -> tyap $ (fi + 1)
-                                                    False -> do
-                                                        printf " --> %s" fnx
-                                                        frename x fnx
-                                        else do
-                                            printf "  <- File exist\n"  -- skipped + 1
-                                            counter ← readIORef skipped; writeIORef skipped $ counter + 1
-                                in tyap 1
-                            False -> do
-                                printf " --> %s" fn
-                                frename x fn
+                 in doesFileExist fn >>= \fileExist →
+                        case fileExist of 
+                            True →  let tyap fi = do {- We are looking for free slot for the file -}
+                                        if fi < i  {- Because it's the only reason for file to exist -}
+                                            then let fnx = printf "%s.%d.%d%s" cd (q::Int) (z::Int) s
+                                                         where s = map toUpper $ takeExtension x
+                                                               z = if odd i then 1 else 2
+                                                               q = ( ceiling $ fromIntegral i / 2.00 ) - fi
+                                                 in doesFileExist fnx >>= \fxx → 
+                                                    case fxx of
+                                                        True  → tyap $ (fi + 1)
+                                                        False → printf " --> %s" fnx >> frename x fnx
+                                            else do
+                                                printf "  <- File exist\n"
+                                                counter ← readIORef skipped; writeIORef skipped $ counter + 1
+                                    in tyap 1 {- Recursive i-1 -> 0 -}
+                            False → printf " --> %s" fn >> frename x fn
             else putStrLn "  <- File Already Renamed"
-                    
+
     -- >                    Statistics
     printf "\n"
     skpd ← readIORef skipped; printf "    skipped %d files\n" (skpd::Int)
