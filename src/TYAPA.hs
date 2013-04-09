@@ -8,7 +8,7 @@ import Data.IORef
 import System.IO
 import System.Directory
 
-#if defined(mingw32_HOST_OS) || defined(__MINGW32__) 
+#if defined(mingw32_HOST_OS) || defined(__MINGW32__)
 import System.FilePath.Windows
 #else
 import System.FilePath.Posix
@@ -101,5 +101,8 @@ main    = do
     printf "\n"
     skpd ← readIORef skipped; printf "    skipped %d files\n" (skpd::Int)
     cntr ← readIORef renamed; printf "    renamed %d files\n" (cntr::Int)
+    -- > Wait for keypress (Only for windows)
+#if defined(mingw32_HOST_OS) || defined(__MINGW32__)
     getChar
+#endif
     -- >
