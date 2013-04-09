@@ -66,7 +66,8 @@ main    = do
                                q = ceiling $ fromIntegral i / 2.00
                      frename fname fnewname = do
                          printf " <- Renamed\n"
-                         counter ← readIORef renamed; writeIORef renamed $ counter + 1
+                         counter ← readIORef renamed
+                         writeIORef renamed $ counter + 1
                          renameFile fname fnewname
                  in doesFileExist fn >>= \fileExist →
                         if fileExist 
