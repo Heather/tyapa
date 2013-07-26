@@ -1,4 +1,4 @@
-﻿{-# LANGUAGE UnicodeSyntax, CPP #-}
+{-# LANGUAGE UnicodeSyntax, CPP #-}
 import RNM
 
 import Text.Printf
