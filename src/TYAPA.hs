@@ -22,8 +22,41 @@ import Text.Printf
 
 import NSORT
 
-version = "0.1.8"
-main    = do
+import System.Environment( getArgs )
+import System.Exit
+import System.Console.GetOpt
+
+version = "0.2.0"
+main = do
+  args <- getArgs
+  let ( actions, nonOpts, msgs ) = getOpt RequireOrder options args
+  opts <- foldl (>>=) (return defaultOptions) actions
+  let Options { optRename = rename } = opts
+  rename
+
+data Options = Options  {
+    optRename :: IO()
+  }
+
+defaultOptions :: Options
+defaultOptions = Options {
+    optRename = go "all"
+  }
+
+options :: [OptDescr (Options -> IO Options)]
+options = [
+    Option ['v'] ["version"] (NoArg showVersion) "show Tyapa version number",
+    Option ['r'] ["rename"]  (ReqArg getr "STRING") "rename rules"
+  ]
+
+showVersion _ = do
+  printf "\n  Tyapa v.%s\n\n" version
+  exitWith ExitSuccess
+
+getr arg opt = return opt { optRename = go arg }
+
+go :: String → IO()
+go rn = do
     -- >
     all ← getDirectoryContents "."
     cd  ← takeBaseName <$> getCurrentDirectory
@@ -73,6 +106,6 @@ main    = do
     
     -- > Wait for keypress (Only for windows)
 #if defined(mingw32_HOST_OS) || defined(__MINGW32__)
-    getChar
+    getChar >> return () -- return nothing but IO
 #endif
     -- >
