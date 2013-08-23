@@ -13,7 +13,7 @@ main = do
   opts <- foldl (>>=) (return defaultOptions) actions
   let Options { optRename = rename } = opts
   printf "\n  Tyapa v.%s\n\n" version
-  rename
+    >> rename
 
 data Options = Options  {
     optRename :: IO()
@@ -33,7 +33,7 @@ options = [
 
 showVersion _ = do
   printf "\n  Tyapa v.%s\n\n" version
-  exitWith ExitSuccess
+    >> exitWith ExitSuccess
   
 showHelp _ = do
     putStrLn $ usageInfo "Usage: TYAPA [optional things]" options
