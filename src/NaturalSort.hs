@@ -1,5 +1,5 @@
 {-# LANGUAGE UnicodeSyntax #-}
-module NSORT
+module NaturalSort
   ( nSort
   ) where
 
@@ -13,7 +13,7 @@ import Control.Monad
 import Control.Applicative
 
 import Text.Regex
-{------------------------- Narural Sort algorithm --------------------------------------}
+{------------------------- Natural Sort algorithm --------------------------------------}
 nSort   ::  [String] → [String]
 nSort s =   if all allFloat s then    
                 let { readFloat = read :: String → Float } 

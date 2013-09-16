@@ -1,19 +1,19 @@
 {-# LANGUAGE UnicodeSyntax, CPP #-}
-import RNM
+import PhotoRenamer
 
 import Text.Printf
 import System.Environment( getArgs )
 import System.Exit
 import System.Console.GetOpt
 
-version = "0.2.1"
+version = "1.0.0"
 main = do
-  args <- getArgs
-  let ( actions, nonOpts, msgs ) = getOpt RequireOrder options args
-  opts <- foldl (>>=) (return defaultOptions) actions
-  let Options { optRename = rename } = opts
-  printf "\n  Tyapa v.%s\n\n" version
-    >> rename
+    args <- getArgs
+    let ( actions, nonOpts, msgs ) = getOpt RequireOrder options args
+    opts <- foldl (>>=) (return defaultOptions) actions
+    let Options { optRename = rename } = opts
+    printf "\n  TYAPA v.%s\n\n" version
+    rename
 
 data Options = Options  {
     optRename :: IO()
@@ -21,7 +21,7 @@ data Options = Options  {
 
 defaultOptions :: Options
 defaultOptions = Options {
-    optRename = rnm "all"
+    optRename = doRename "all"
   }
 
 options :: [OptDescr (Options -> IO Options)]
@@ -32,11 +32,11 @@ options = [
   ]
 
 showVersion _ = do
-  printf "\n  Tyapa v.%s\n\n" version
-    >> exitWith ExitSuccess
+    printf "\n  TYAPA v.%s\n\n" version
+        >> exitWith ExitSuccess
   
 showHelp _ = do
     putStrLn $ usageInfo "Usage: TYAPA [optional things]" options
     exitWith ExitSuccess
 
-getr arg opt = return opt { optRename = rnm arg }
+getr arg opt = return opt { optRename = doRename arg }
