@@ -32,16 +32,17 @@ doRename rn = do
     all <- getDirectoryContents "."
     cd  <- takeBaseName <$> getCurrentDirectory
     let rx = printf "(\\%s)(\\.)([0-9]*)(\\.)([1-2])(\\.)." cd
-    -- >
-    let ziped = zip[1..] . nSort
+        ziped = zip[1..] . nSort
               . filter (\x → any(`isSuffixOf` map toLower x)
                     [".jpg", ".jpeg", ".png", ".gif", ".bmp"])
                         $ all
+        force = case rn of "force"  → True
+                           _        → False
     skipped <- newIORef 0 {- IO REF: -}
     renamed <- newIORef 0 {- IO REF: -}
     forM_ ziped $ \(i,x) → do
         printf "  %s" x
-        if isNothing . matchRegex (mkRegex rx) $ x 
+        if or [force, ( isNothing . matchRegex (mkRegex rx) $ x )]
             then let fn= printf "%s.%d.%d%s" cd (q::Int) (z::Int) s
                          where s = map toUpper $ takeExtension x
                                z = if odd i then 1 else 2
