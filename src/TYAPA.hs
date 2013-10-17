@@ -6,7 +6,7 @@ import System.Environment( getArgs )
 import System.Exit
 import System.Console.GetOpt
 
-version = "1.1.0"
+version = "1.1.1"
 main = do
     args <- getArgs
     let ( actions, nonOpts, msgs ) = getOpt RequireOrder options args
@@ -21,7 +21,7 @@ data Options = Options  {
 
 defaultOptions :: Options
 defaultOptions = Options {
-    optRename = doRename "all"
+    optRename = doRename "all" "."
   }
 
 options :: [OptDescr (Options → IO Options)]
@@ -29,7 +29,8 @@ options = [
     Option ['v'] ["version"] (NoArg showVersion) "show Tyapa version number",
     Option ['h'] ["help"]    (NoArg showHelp) "display this help",
     Option ['r'] ["rename"]  (ReqArg getr "STRING") "rename rules",
-    Option ['f'] ["force"]   (NoArg (\ opts -> return opts { optRename = doRename "force" }))
+    Option ['p'] ["path"]    (ReqArg getp "STRING") "rename directory",
+    Option ['f'] ["force"]   (NoArg (\ opts -> return opts { optRename = doRename "force" "." }))
                              "force rename"
   ]
 
@@ -41,4 +42,5 @@ showHelp _ = do
     putStrLn $ usageInfo "Usage: TYAPA [optional things]" options
     exitWith ExitSuccess
 
-getr arg opt = return opt { optRename = doRename arg }
+getr arg opt = return opt { optRename = doRename arg "." }
+getp arg opt = return opt { optRename = doRename "force" arg }

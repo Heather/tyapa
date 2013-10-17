@@ -26,11 +26,12 @@ import Control.Applicative
 import Text.Regex
 import Text.Printf
 {------------------------ Photo rename algorithm ------------------------------------} 
-doRename :: String → IO()
-doRename rn = do
+doRename :: String → String → IO()
+doRename rn path = do
     -- >
-    all <- getDirectoryContents "."
-    cd  <- takeBaseName <$> getCurrentDirectory
+    all <- getDirectoryContents path
+    cd  <-  case path of "."  → takeBaseName <$> getCurrentDirectory
+                         _    → return path
     let rx = printf "(\\%s)(\\.)([0-9]*)(\\.)([1-2])(\\.)." cd
         ziped = zip[1..] . nSort
               . filter (\x → any(`isSuffixOf` map toLower x)
@@ -40,13 +41,17 @@ doRename rn = do
                            _        → False
     skipped <- newIORef 0 {- IO REF: -}
     renamed <- newIORef 0 {- IO REF: -}
-    forM_ ziped $ \(i,x) → do
+    forM_ ziped $ \(i,xxx) → do
+        let x = case path of "."  → xxx
+                             _    → printf "%s\\%s" path xxx
         printf "  %s" x
         if or [force, ( isNothing . matchRegex (mkRegex rx) $ x )]
-            then let fn= printf "%s.%d.%d%s" cd (q::Int) (z::Int) s
+            then let fn= printf "%s.%d.%d%s" c (q::Int) (z::Int) s
                          where s = map toUpper $ takeExtension x
                                z = if odd i then 1 else 2
                                q = ceiling $ fromIntegral i / 2.00
+                               c = case path of "." → cd
+                                                _   → printf "%s\\%s" path cd
                      frename fname fnewname = do
                          printf " <- Renamed\n"
                          counter <- readIORef renamed
@@ -56,10 +61,12 @@ doRename rn = do
                         if fileExist 
                             then let tyap fi =      {- We are looking for free slot for the file -}
                                         if fi < i  {- Because it's the only reason for file to exist -}
-                                            then let fnx = printf "%s.%d.%d%s" cd (q::Int) (z::Int) s
+                                            then let fnx = printf "%s.%d.%d%s" c (q::Int) (z::Int) s
                                                          where s = map toUpper $ takeExtension x
                                                                z = if odd i then 1 else 2
                                                                q = ceiling (fromIntegral i / 2.00 ) - fi
+                                                               c = case path of "." → cd
+                                                                                _   → printf "%s\\%s" path cd
                                                  in doesFileExist fnx >>= \fileExistx → 
                                                     if fileExistx
                                                         then tyap (fi + 1)
