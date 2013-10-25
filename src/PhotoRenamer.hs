@@ -26,8 +26,8 @@ import Control.Applicative
 import Text.Regex
 import Text.Printf
 {------------------------ Photo rename algorithm ------------------------------------} 
-doRename :: String → String → IO()
-doRename rn path = do
+doRename :: Bool → String → IO()
+doRename force path = do
     -- >
     all <- getDirectoryContents path
     cd  <-  case path of "."  → takeBaseName <$> getCurrentDirectory
@@ -37,8 +37,6 @@ doRename rn path = do
               . filter (\x → any(`isSuffixOf` map toLower x)
                     [".jpg", ".jpeg", ".png", ".gif", ".bmp"])
                         $ all
-        force = case rn of "force"  → True
-                           _        → False
     skipped <- newIORef 0 {- IO REF: -}
     renamed <- newIORef 0 {- IO REF: -}
     forM_ ziped $ \(i,xxx) → do
