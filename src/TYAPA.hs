@@ -1,4 +1,3 @@
-{-# LANGUAGE UnicodeSyntax, CPP #-}
 import PhotoRenamer
 
 import Text.Printf
@@ -24,7 +23,7 @@ defaultOptions = Options {
     optRename = doRename False "."
   }
 
-options :: [OptDescr (Options → IO Options)]
+options :: [OptDescr (Options -> IO Options)]
 options = [
     Option ['v'] ["version"] (NoArg showVersion) "show Tyapa version number",
     Option ['h'] ["help"]    (NoArg showHelp) "display this help",

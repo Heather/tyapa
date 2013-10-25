@@ -1,4 +1,3 @@
-{-# LANGUAGE UnicodeSyntax #-}
 module NaturalSort
   ( nSort
   ) where
@@ -14,15 +13,15 @@ import Control.Applicative
 
 import Text.Regex
 {------------------------- Natural Sort algorithm --------------------------------------}
-nSort   ::  [String] → [String]
+nSort   ::  [String] -> [String]
 nSort s =   if all allFloat s then    
-                let { readFloat = read :: String → Float } 
+                let { readFloat = read :: String -> Float } 
                 in  (map show . sortBy compare . map readFloat) s
             else    
                 sortBy natComp s
-    where allFloat  =   all (\x → isDigit x || '.' == 'x')
+    where allFloat  =   all (\x -> isDigit x || '.' == 'x')
 
-natComp                                 ::  String → String → Ordering
+natComp                                 ::  String -> String -> Ordering
 natComp [] []                           =   EQ
 natComp [] _                            =   LT
 natComp _ []                            =   GT
