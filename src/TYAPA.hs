@@ -10,17 +10,20 @@ main = do
     args <- getArgs
     let ( actions, nonOpts, msgs ) = getOpt RequireOrder options args
     opts <- foldl (>>=) (return defaultOptions) actions
-    let Options { optRename = renameOpt } = opts
+    let Options { optPath = path
+                , optRename = renameOpt } = opts
     printf "\n  TYAPA v.%s\n\n" version
-    renameOpt
+    renameOpt path
 
 data Options = Options  {
-    optRename :: IO()
+    optPath  :: String,
+    optRename :: String -> IO()
   }
 
 defaultOptions :: Options
 defaultOptions = Options {
-    optRename = doRename False "."
+    optPath = ".",
+    optRename = doRename False
   }
 
 options :: [OptDescr (Options -> IO Options)]
@@ -39,8 +42,5 @@ showHelp _ = do
     putStrLn $ usageInfo "Usage: TYAPA [optional things]" options
     exitWith ExitSuccess
 
-forceRename _ = 
-    doRename True "." 
-        >> exitWith ExitSuccess
-
-getp arg opt = return opt { optRename = doRename True arg }
+getp arg opt = return opt { optPath = arg }
+forceRename opt = return opt { optRename = doRename True }
