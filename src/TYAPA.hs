@@ -5,7 +5,7 @@ import System.Environment( getArgs )
 import System.Exit
 import System.Console.GetOpt
 
-version = "1.1.2"
+version = "1.1.3"
 main = do
     args <- getArgs
     let ( actions, nonOpts, msgs ) = getOpt RequireOrder options args
