@@ -1,6 +1,8 @@
 photo files renamer
 ===================
 
+[![Build Status](https://travis-ci.org/Heather/tyapa.png?branch=master)](https://travis-ci.org/Heather/tyapa)
+
 Usage
 -----
 
