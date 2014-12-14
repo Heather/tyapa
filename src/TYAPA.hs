@@ -4,40 +4,41 @@ import Text.Printf
 import System.Environment( getArgs )
 import System.Exit
 import System.Console.GetOpt
+import Control.Applicative
 
-version = "1.1.3"
-main = do
-    args <- getArgs
-    let ( actions, nonOpts, msgs ) = getOpt RequireOrder options args
-    opts <- foldl (>>=) (return defaultOptions) actions
-    let Options { optPath = path
-                , optRename = renameOpt } = opts
-    printf "\n  TYAPA v.%s\n\n" version
-    renameOpt path
+import qualified Paths_TYAPA as My
+import Data.Version (showVersion)
 
-data Options = Options  {
-    optPath  :: String,
-    optRename :: String -> IO()
-  }
+main = do (actions, _, _) <- getOpt RequireOrder options <$> getArgs
+          Options { optPath   = path
+                  , optRename = renameOpt 
+                  } <- foldl (>>=) (return defaultOptions) actions
+          printf "\n  TYAPA v.%s\n\n" (showVersion My.version)
+          renameOpt path
+
+data Options = Options
+    { optPath  :: String
+    , optRename :: String -> IO()
+    }
 
 defaultOptions :: Options
-defaultOptions = Options {
-    optPath = ".",
-    optRename = doRename False
-  }
+defaultOptions = Options 
+    { optPath = "."
+    , optRename = doRename False
+    }
 
 options :: [OptDescr (Options -> IO Options)]
 options = [
-    Option ['v'] ["version"] (NoArg showVersion) "show Tyapa version number",
+    Option ['v'] ["version"] (NoArg showVer) "show Tyapa version number",
     Option ['h'] ["help"]    (NoArg showHelp) "display this help",
     Option ['f'] ["force"]   (NoArg forceRename) "force rename",
     Option ['p'] ["path"]    (ReqArg getp "STRING") "rename directory"
   ]
 
-showVersion _ = do
-    printf "\n  TYAPA v.%s\n\n" version
+showVer _ = do
+    printf "\n  TYAPA v.%s\n\n" (showVersion My.version)
         >> exitWith ExitSuccess
-  
+
 showHelp _ = do
     putStrLn $ usageInfo "Usage: TYAPA [optional things]" options
     exitWith ExitSuccess
