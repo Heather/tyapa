@@ -22,6 +22,8 @@ Usage
     renamed 8 files
 ```
 
+<img align="left" src="http://fc04.deviantart.net/fs70/f/2012/268/0/a/render_anime_girl_by_mato_kuroi26-d5fvrz6.png"/>
+
 Code snippet
 ------------
 
@@ -69,3 +71,5 @@ in doesFileExist fn >>= \fileExist >
 Thanks to :
  - https://github.com/ameingast for Natural Sort
  - #gentoo-haskell for teaching me some basics
+
+<img align="left" src="http://fc06.deviantart.net/fs71/f/2012/062/8/6/render_takenaka_by_sakucitah-d4rlfjr.png"/>
