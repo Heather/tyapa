@@ -1,3 +1,5 @@
+{-# LANGUAGE UnicodeSyntax #-}
+
 import PhotoRenamer
 
 import Text.Printf
@@ -17,17 +19,17 @@ main = do (actions, _, _) <- getOpt RequireOrder options <$> getArgs
           renameOpt path
 
 data Options = Options
-    { optPath  :: String
-    , optRename :: String -> IO()
+    { optPath ∷ String
+    , optRename ∷ String → IO()
     }
 
-defaultOptions :: Options
+defaultOptions ∷ Options
 defaultOptions = Options 
     { optPath = "."
     , optRename = doRename False
     }
 
-options :: [OptDescr (Options -> IO Options)]
+options ∷ [OptDescr (Options → IO Options)]
 options = [
     Option ['v'] ["version"] (NoArg showVer) "show Tyapa version number",
     Option ['h'] ["help"]    (NoArg showHelp) "display this help",
